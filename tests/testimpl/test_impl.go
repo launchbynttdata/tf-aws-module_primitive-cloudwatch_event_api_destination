@@ -5,11 +5,13 @@ import (
 	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
 	eventbridgetypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
 	"github.com/stretchr/testify/assert"
@@ -70,12 +72,13 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 	t.Run("ExerciseApiDestinationWithPutEvents", func(t *testing.T) {
 		opts := ctx.TerratestTerraformOptions()
 		region := getRegion(t, opts)
+		dlqURL := terraform.Output(t, opts, "dlq_url")
 
 		cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
 		require.NoError(t, err)
 
-		client := eventbridge.NewFromConfig(cfg)
-		_, err = client.PutEvents(context.Background(), &eventbridge.PutEventsInput{
+		ebClient := eventbridge.NewFromConfig(cfg)
+		_, err = ebClient.PutEvents(context.Background(), &eventbridge.PutEventsInput{
 			Entries: []eventbridgetypes.PutEventsRequestEntry{
 				{
 					Source:       aws.String("test.api-destination"),
@@ -86,6 +89,17 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 			},
 		})
 		require.NoError(t, err)
+
+		time.Sleep(30 * time.Second)
+
+		sqsClient := sqs.NewFromConfig(cfg)
+		receiveOut, err := sqsClient.ReceiveMessage(context.Background(), &sqs.ReceiveMessageInput{
+			QueueUrl:            aws.String(dlqURL),
+			MaxNumberOfMessages: 10,
+			WaitTimeSeconds:     1,
+		})
+		require.NoError(t, err)
+		assert.Empty(t, receiveOut.Messages, "DLQ should be empty; failed deliveries would indicate broken target wiring, permissions, or connection auth")
 	})
 }
 

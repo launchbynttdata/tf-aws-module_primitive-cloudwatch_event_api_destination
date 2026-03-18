@@ -49,3 +49,8 @@ output "event_rule_name" {
   description = "The name of the EventBridge rule that triggers the API destination."
   value       = aws_cloudwatch_event_rule.rule.name
 }
+
+output "dlq_url" {
+  description = "URL of the dead-letter queue for failed event deliveries."
+  value       = aws_sqs_queue.dlq.url
+}

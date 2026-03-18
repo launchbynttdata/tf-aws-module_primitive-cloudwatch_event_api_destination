@@ -6,7 +6,6 @@ This example creates an EventBridge connection and API destination, an IAM role 
 
 ```hcl
 data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
 
 module "resource_names" {
   source   = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
@@ -76,7 +75,7 @@ resource "aws_iam_role_policy" "eventbridge_invoke_api_destination" {
       {
         Effect   = "Allow"
         Action   = "events:InvokeApiDestination"
-        Resource = "arn:aws:events:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:api-destination/*"
+        Resource = module.api_destination.arn
       }
     ]
   })
@@ -160,7 +159,8 @@ resource "aws_cloudwatch_event_target" "target" {
 | [aws_cloudwatch_event_target.target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_iam_role.eventbridge_invoke_api_destination](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.eventbridge_invoke_api_destination](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_sqs_queue.dlq](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_sqs_queue_policy.dlq](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue_policy) | resource |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
@@ -194,4 +194,5 @@ resource "aws_cloudwatch_event_target" "target" {
 | <a name="output_invocation_rate_limit_per_second"></a> [invocation\_rate\_limit\_per\_second](#output\_invocation\_rate\_limit\_per\_second) | The maximum invocations per second for this destination. |
 | <a name="output_connection_arn"></a> [connection\_arn](#output\_connection\_arn) | The ARN of the EventBridge connection. |
 | <a name="output_event_rule_name"></a> [event\_rule\_name](#output\_event\_rule\_name) | The name of the EventBridge rule that triggers the API destination. |
+| <a name="output_dlq_url"></a> [dlq\_url](#output\_dlq\_url) | URL of the dead-letter queue for failed event deliveries. |
 <!-- END_TF_DOCS -->

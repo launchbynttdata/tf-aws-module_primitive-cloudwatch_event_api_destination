@@ -9,6 +9,7 @@ resource_names_map = {
   api_destination = { name = "eventbridgeapidest1", max_length = 64 }
   event_rule      = { name = "eventbridgerule1", max_length = 64 }
   invoke_role     = { name = "invokeapidest1", max_length = 64 }
+  dlq             = { name = "eventbridgedlq1", max_length = 80 }
 }
 
 connection_description        = "EventBridge connection for API destination example"

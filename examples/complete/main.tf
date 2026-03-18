@@ -80,13 +80,11 @@ resource "aws_iam_role_policy" "eventbridge_invoke_api_destination" {
       {
         Effect   = "Allow"
         Action   = "events:InvokeApiDestination"
-        Resource = "arn:aws:events:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:api-destination/*"
+        Resource = module.api_destination.arn
       }
     ]
   })
 }
-
-data "aws_caller_identity" "current" {}
 
 resource "aws_cloudwatch_event_rule" "rule" {
   name           = module.resource_names["event_rule"].standard
@@ -95,10 +93,40 @@ resource "aws_cloudwatch_event_rule" "rule" {
   event_pattern  = jsonencode({ "source" = ["test.api-destination"] })
 }
 
+resource "aws_sqs_queue" "dlq" {
+  name              = module.resource_names["dlq"].standard
+  kms_master_key_id = "alias/aws/sqs"
+}
+
+resource "aws_sqs_queue_policy" "dlq" {
+  queue_url = aws_sqs_queue.dlq.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = "events.amazonaws.com" }
+        Action    = "sqs:SendMessage"
+        Resource  = aws_sqs_queue.dlq.arn
+        Condition = {
+          ArnEquals = {
+            "aws:SourceArn" = aws_cloudwatch_event_rule.rule.arn
+          }
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_cloudwatch_event_target" "target" {
   rule           = aws_cloudwatch_event_rule.rule.name
   event_bus_name = "default"
   target_id      = "api-destination-target"
   arn            = module.api_destination.arn
   role_arn       = aws_iam_role.eventbridge_invoke_api_destination.arn
+
+  dead_letter_config {
+    arn = aws_sqs_queue.dlq.arn
+  }
 }
