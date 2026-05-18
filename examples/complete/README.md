@@ -137,18 +137,12 @@ resource "aws_cloudwatch_event_target" "target" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.9 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.14 |
 
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
-
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 | <a name="module_api_destination"></a> [api\_destination](#module\_api\_destination) | ../.. | n/a |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 
 ## Resources
 
@@ -167,32 +161,32 @@ resource "aws_cloudwatch_event_target" "target" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | Logical product family for resource naming. | `string` | n/a | yes |
-| <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | Logical product service for resource naming. | `string` | n/a | yes |
 | <a name="input_class_env"></a> [class\_env](#input\_class\_env) | Class environment for resource naming (e.g., dev, prod). | `string` | n/a | yes |
-| <a name="input_instance_env"></a> [instance\_env](#input\_instance\_env) | Instance environment for resource naming (0-999). | `number` | n/a | yes |
-| <a name="input_instance_resource"></a> [instance\_resource](#input\_instance\_resource) | Instance resource for resource naming (0-100). | `number` | n/a | yes |
-| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | Map of resource types to naming configuration for the resource\_name module. | <pre>map(object({<br/>    name       = string<br/>    max_length = number<br/>  }))</pre> | n/a | yes |
-| <a name="input_connection_description"></a> [connection\_description](#input\_connection\_description) | Description of the EventBridge connection. | `string` | `null` | no |
-| <a name="input_connection_authorization_type"></a> [connection\_authorization\_type](#input\_connection\_authorization\_type) | Authorization type for the EventBridge connection (API\_KEY, BASIC, OAUTH\_CLIENT\_CREDENTIALS). | `string` | `"API_KEY"` | no |
 | <a name="input_connection_api_key_name"></a> [connection\_api\_key\_name](#input\_connection\_api\_key\_name) | API key header name for the connection. | `string` | n/a | yes |
 | <a name="input_connection_api_key_value"></a> [connection\_api\_key\_value](#input\_connection\_api\_key\_value) | API key value for the connection. Stored in AWS Secrets Manager. | `string` | n/a | yes |
-| <a name="input_invocation_endpoint"></a> [invocation\_endpoint](#input\_invocation\_endpoint) | URL endpoint to invoke as a target. Must use HTTPS. | `string` | n/a | yes |
-| <a name="input_http_method"></a> [http\_method](#input\_http\_method) | HTTP method for the invocation endpoint. | `string` | n/a | yes |
+| <a name="input_connection_authorization_type"></a> [connection\_authorization\_type](#input\_connection\_authorization\_type) | Authorization type for the EventBridge connection (API\_KEY, BASIC, OAUTH\_CLIENT\_CREDENTIALS). | `string` | `"API_KEY"` | no |
+| <a name="input_connection_description"></a> [connection\_description](#input\_connection\_description) | Description of the EventBridge connection. | `string` | `null` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description of the API Destination. | `string` | `null` | no |
+| <a name="input_http_method"></a> [http\_method](#input\_http\_method) | HTTP method for the invocation endpoint. | `string` | n/a | yes |
+| <a name="input_instance_env"></a> [instance\_env](#input\_instance\_env) | Instance environment for resource naming (0-999). | `number` | n/a | yes |
+| <a name="input_instance_resource"></a> [instance\_resource](#input\_instance\_resource) | Instance resource for resource naming (0-100). | `number` | n/a | yes |
+| <a name="input_invocation_endpoint"></a> [invocation\_endpoint](#input\_invocation\_endpoint) | URL endpoint to invoke as a target. Must use HTTPS. | `string` | n/a | yes |
 | <a name="input_invocation_rate_limit_per_second"></a> [invocation\_rate\_limit\_per\_second](#input\_invocation\_rate\_limit\_per\_second) | Maximum invocations per second for the API destination. | `number` | `300` | no |
+| <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | Logical product family for resource naming. | `string` | n/a | yes |
+| <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | Logical product service for resource naming. | `string` | n/a | yes |
+| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | Map of resource types to naming configuration for the resource\_name module. | <pre>map(object({<br/>    name       = string<br/>    max_length = number<br/>  }))</pre> | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_id"></a> [id](#output\_id) | The ID of the API Destination (same as the ARN). |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the API Destination. |
-| <a name="output_name"></a> [name](#output\_name) | The name of the API Destination. |
-| <a name="output_invocation_endpoint"></a> [invocation\_endpoint](#output\_invocation\_endpoint) | The URL endpoint invoked as a target. |
-| <a name="output_http_method"></a> [http\_method](#output\_http\_method) | The HTTP method used for the invocation endpoint. |
-| <a name="output_invocation_rate_limit_per_second"></a> [invocation\_rate\_limit\_per\_second](#output\_invocation\_rate\_limit\_per\_second) | The maximum invocations per second for this destination. |
 | <a name="output_connection_arn"></a> [connection\_arn](#output\_connection\_arn) | The ARN of the EventBridge connection. |
-| <a name="output_event_rule_name"></a> [event\_rule\_name](#output\_event\_rule\_name) | The name of the EventBridge rule that triggers the API destination. |
 | <a name="output_dlq_url"></a> [dlq\_url](#output\_dlq\_url) | URL of the dead-letter queue for failed event deliveries. |
+| <a name="output_event_rule_name"></a> [event\_rule\_name](#output\_event\_rule\_name) | The name of the EventBridge rule that triggers the API destination. |
+| <a name="output_http_method"></a> [http\_method](#output\_http\_method) | The HTTP method used for the invocation endpoint. |
+| <a name="output_id"></a> [id](#output\_id) | The ID of the API Destination (same as the ARN). |
+| <a name="output_invocation_endpoint"></a> [invocation\_endpoint](#output\_invocation\_endpoint) | The URL endpoint invoked as a target. |
+| <a name="output_invocation_rate_limit_per_second"></a> [invocation\_rate\_limit\_per\_second](#output\_invocation\_rate\_limit\_per\_second) | The maximum invocations per second for this destination. |
+| <a name="output_name"></a> [name](#output\_name) | The name of the API Destination. |
 <!-- END_TF_DOCS -->
