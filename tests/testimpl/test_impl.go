@@ -32,11 +32,11 @@ func getRegion(t *testing.T, _ *terraform.Options) string {
 func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 	t.Run("VerifyTerraformOutputs", func(t *testing.T) {
 		opts := ctx.TerratestTerraformOptions()
-		arn := terraform.Output(t, opts, "arn")
-		name := terraform.Output(t, opts, "name")
-		invocationEndpoint := terraform.Output(t, opts, "invocation_endpoint")
-		httpMethod := terraform.Output(t, opts, "http_method")
-		invocationRateLimit := terraform.Output(t, opts, "invocation_rate_limit_per_second")
+		arn := terraform.OutputContext(t, context.Background(), opts, "arn")
+		name := terraform.OutputContext(t, context.Background(), opts, "name")
+		invocationEndpoint := terraform.OutputContext(t, context.Background(), opts, "invocation_endpoint")
+		httpMethod := terraform.OutputContext(t, context.Background(), opts, "http_method")
+		invocationRateLimit := terraform.OutputContext(t, context.Background(), opts, "invocation_rate_limit_per_second")
 
 		assert.Contains(t, arn, "arn:aws:events:", "ARN should be a valid EventBridge API destination ARN")
 		assert.Regexp(t, regexp.MustCompile(`^[a-zA-Z0-9.-]+$`), name, "Name should match EventBridge resource naming")
@@ -47,8 +47,8 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 
 	t.Run("VerifyApiDestinationViaAWS", func(t *testing.T) {
 		opts := ctx.TerratestTerraformOptions()
-		arn := terraform.Output(t, opts, "arn")
-		name := terraform.Output(t, opts, "name")
+		arn := terraform.OutputContext(t, context.Background(), opts, "arn")
+		name := terraform.OutputContext(t, context.Background(), opts, "name")
 		region := getRegion(t, opts)
 
 		cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
@@ -72,7 +72,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 	t.Run("ExerciseApiDestinationWithPutEvents", func(t *testing.T) {
 		opts := ctx.TerratestTerraformOptions()
 		region := getRegion(t, opts)
-		dlqURL := terraform.Output(t, opts, "dlq_url")
+		dlqURL := terraform.OutputContext(t, context.Background(), opts, "dlq_url")
 
 		cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
 		require.NoError(t, err)
@@ -106,8 +106,8 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 func TestComposableCompleteReadonly(t *testing.T, ctx types.TestContext) {
 	t.Run("VerifyTerraformOutputsReadonly", func(t *testing.T) {
 		opts := ctx.TerratestTerraformOptions()
-		arn := terraform.Output(t, opts, "arn")
-		name := terraform.Output(t, opts, "name")
+		arn := terraform.OutputContext(t, context.Background(), opts, "arn")
+		name := terraform.OutputContext(t, context.Background(), opts, "name")
 
 		assert.Contains(t, arn, "arn:aws:events:", "ARN should be a valid EventBridge API destination ARN")
 		assert.Regexp(t, regexp.MustCompile(`^[a-zA-Z0-9.-]+$`), name, "Name should match EventBridge resource naming")
@@ -115,8 +115,8 @@ func TestComposableCompleteReadonly(t *testing.T, ctx types.TestContext) {
 
 	t.Run("VerifyApiDestinationExistsViaAWS", func(t *testing.T) {
 		opts := ctx.TerratestTerraformOptions()
-		arn := terraform.Output(t, opts, "arn")
-		name := terraform.Output(t, opts, "name")
+		arn := terraform.OutputContext(t, context.Background(), opts, "arn")
+		name := terraform.OutputContext(t, context.Background(), opts, "name")
 		region := getRegion(t, opts)
 
 		cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
